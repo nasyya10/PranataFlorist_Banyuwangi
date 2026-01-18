@@ -1,4 +1,5 @@
 'use client';
+import { useState } from 'react';
 import styled from 'styled-components';
 import { ButtonVariant, CardVariant } from 'styled-pasya';
 
@@ -32,6 +33,10 @@ const Logo = styled.h1`
   margin: 0;
   cursor: pointer;
   white-space: nowrap;
+
+  @media (max-width: 768px) {
+    font-size: 1.4rem;
+  }
 `;
 
 const Nav = styled.nav`
@@ -40,6 +45,10 @@ const Nav = styled.nav`
   flex-wrap: wrap;
   justify-content: center;
   flex: 1;
+
+  @media (max-width: 768px) {
+    display: none;
+  }
 `;
 
 const NavLink = styled.button`
@@ -75,10 +84,100 @@ const HeaderButton = styled.button`
   transition: all 0.3s ease;
   white-space: nowrap;
 
+  @media (max-width: 768px) {
+    display: none;
+  }
+
   &:hover {
     transform: translateY(-3px);
     box-shadow: 0 12px 35px rgba(255, 20, 147, 0.5);
   }
+`;
+
+// Burger Menu Button
+const BurgerButton = styled.button`
+  display: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.5rem;
+  z-index: 200;
+
+  @media (max-width: 768px) {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  span {
+    display: block;
+    width: 28px;
+    height: 3px;
+    background: #FF1493;
+    border-radius: 2px;
+    transition: all 0.3s ease;
+  }
+
+  &.open span:nth-child(1) {
+    transform: rotate(45deg) translate(5px, 5px);
+  }
+  &.open span:nth-child(2) {
+    opacity: 0;
+  }
+  &.open span:nth-child(3) {
+    transform: rotate(-45deg) translate(7px, -6px);
+  }
+`;
+
+// Mobile Navigation Overlay
+const MobileNav = styled.div`
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.98);
+  z-index: 150;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2rem;
+
+  @media (max-width: 768px) {
+    display: ${props => props.$isOpen ? 'flex' : 'none'};
+  }
+`;
+
+const MobileNavLink = styled.button`
+  background: none;
+  border: none;
+  color: #FF1493;
+  font-size: 1.5rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  cursor: pointer;
+  padding: 1rem 2rem;
+  transition: all 0.3s ease;
+
+  &:hover {
+    color: #C71585;
+    transform: scale(1.1);
+  }
+`;
+
+const MobileNavButton = styled.button`
+  background: linear-gradient(135deg, #FF1493 0%, #FF69B4 100%);
+  color: white;
+  border: none;
+  padding: 1rem 3rem;
+  border-radius: 50px;
+  font-size: 1.2rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  cursor: pointer;
+  margin-top: 1rem;
 `;
 
 // ========== PAGE STYLED COMPONENTS ==========
@@ -103,7 +202,7 @@ const HeroTitle = styled.h1`
   font-size: 3.5rem;
   font-weight: 900;
   margin-bottom: 1rem;
-  text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
 `;
 
 const HeroSubtitle = styled.p`
@@ -117,7 +216,7 @@ const HeroSubtitle = styled.p`
 
 const ButtonWrapper = styled.div`
   display: flex;
-  gap: 1.5rem;
+  gap: 1rem;
   justify-content: center;
   flex-wrap: wrap;
 `;
@@ -360,18 +459,11 @@ const StarRating = styled.div`
 // ========== DATA ==========
 const PRODUCTS = [
   {
-    title: 'Rose Bouquet Premium',
-    description: 'Bunga mawar merah segar dengan wrapping elegan',
+    title: 'Wedding Bouquet',
+    description: 'Buket pernikahan cantik dengan bunga segar',
     image: 'https://i.pinimg.com/736x/5a/aa/d2/5aaad243a6cc3e7e3c1f6669b50b260d.jpg',
-    price: 'Rp 225.000',
-    rating: '4.9'
-  },
-  {
-    title: 'Wedding Flower Set',
-    description: 'Paket lengkap untuk pernikahan dengan bunga pilihan',
-    image: 'https://i.pinimg.com/736x/8a/65/ee/8a65eefda8faeefd57945707dc7ec363.jpg',
-    price: 'Rp 1.350.000',
-    rating: '5.0'
+    price: 'Rp 450.000',
+    rating: '4.8'
   },
   {
     title: 'Birthday Arrangement',
@@ -426,7 +518,10 @@ const TESTIMONIALS = [
 
 // ========== COMPONENT ==========
 export default function Home() {
+  const [menuOpen, setMenuOpen] = useState(false);
+
   const scrollTo = (id) => {
+    setMenuOpen(false);
     const element = document.getElementById(id);
     if (element) {
       element.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -439,7 +534,16 @@ export default function Home() {
 
   return (
     <Main>
-      {/* HEADER - Custom with working navigation */}
+      {/* MOBILE NAV OVERLAY */}
+      <MobileNav $isOpen={menuOpen}>
+        <MobileNavLink onClick={() => scrollTo('beranda')}>Beranda</MobileNavLink>
+        <MobileNavLink onClick={() => scrollTo('produk')}>Produk</MobileNavLink>
+        <MobileNavLink onClick={() => scrollTo('tentang')}>Tentang</MobileNavLink>
+        <MobileNavLink onClick={() => scrollTo('kontak')}>Kontak</MobileNavLink>
+        <MobileNavButton onClick={() => { setMenuOpen(false); scrollTo('kontak'); }}>Beli Sekarang</MobileNavButton>
+      </MobileNav>
+
+      {/* HEADER */}
       <Header>
         <HeaderContent>
           <Logo onClick={() => scrollTo('beranda')}>PRANATA FLORIST</Logo>
@@ -450,6 +554,11 @@ export default function Home() {
             <NavLink onClick={() => scrollTo('kontak')}>Kontak</NavLink>
           </Nav>
           <HeaderButton onClick={() => scrollTo('kontak')}>Beli Sekarang</HeaderButton>
+          <BurgerButton className={menuOpen ? 'open' : ''} onClick={() => setMenuOpen(!menuOpen)}>
+            <span></span>
+            <span></span>
+            <span></span>
+          </BurgerButton>
         </HeaderContent>
       </Header>
 
@@ -489,9 +598,9 @@ export default function Home() {
               Tidak heran banyak pelanggan yang kembali mempercayakan momen penting mereka kepada kami!
             </p>
             <ul>
-              <li>✓ Bunga Selalu Fresh & Berkualitas</li>
-              <li>✓ Terima Custom Request</li>
-              <li>✓ Ribuan Customer Puas</li>
+              <li>Bunga Selalu Fresh & Berkualitas</li>
+              <li>Terima Custom Request</li>
+              <li>Ribuan Customer Puas</li>
             </ul>
           </ProfileText>
         </ProfileContent>
@@ -507,21 +616,21 @@ export default function Home() {
           <CardVariant variant="gradient" data={{
             title: 'Bunga Segar',
             description: 'Bunga pilihan langsung dari kebun dengan kualitas terbaik',
-            image: 'https://i.pinimg.com/736x/f6/55/07/f655074c9e03ca01d9df57ff029c258c.jpg',
+            image: 'https://i.pinimg.com/736x/5a/aa/d2/5aaad243a6cc3e7e3c1f6669b50b260d.jpg',
             price: 'Fresh',
             rating: '5.0'
           }} />
           <CardVariant variant="gradient" data={{
             title: 'Pengiriman Cepat',
             description: 'Pengiriman tepat waktu ke seluruh wilayah',
-            image: 'https://i.pinimg.com/736x/1f/39/d2/1f39d2d0154460b2b7f886faedfbb36d.jpg',
+            image: 'https://i.pinimg.com/736x/8a/65/ee/8a65eefda8faeefd57945707dc7ec363.jpg',
             price: 'Same Day',
             rating: '4.9'
           }} />
           <CardVariant variant="gradient" data={{
             title: 'Desain Elegan',
             description: 'Tim florist profesional untuk desain terbaik',
-            image: 'https://i.pinimg.com/1200x/a0/d5/4a/a0d54ae225df9d9b2cebfb729b021d95.jpg',
+            image: 'https://i.pinimg.com/1200x/9a/0c/ef/9a0cefcf58452b9640b6c75409a7712e.jpg',
             price: 'Premium',
             rating: '5.0'
           }} />
